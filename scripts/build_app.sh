@@ -42,4 +42,8 @@ echo "5. Signing /Applications/AgentNudge.app..."
 codesign --force --deep --sign - --identifier com.tanishkyadav.agent-nudge /Applications/AgentNudge.app
 codesign --verify --verbose /Applications/AgentNudge.app
 
+echo "6. Clearing stale TCC signature cache for com.tanishkyadav.agent-nudge..."
+/usr/bin/tccutil reset Accessibility com.tanishkyadav.agent-nudge || true
+/usr/bin/tccutil reset AppleEvents com.tanishkyadav.agent-nudge || true
+
 echo "Done! Installed at /Applications/AgentNudge.app"

@@ -177,6 +177,10 @@ struct MenuBarPopoverView: View {
                 DeliveryEngine.promptForAccessibility()
             }
 
+            Button("Reset Accessibility Cache & Re-Prompt") {
+                DeliveryEngine.resetAndPromptForAccessibility()
+            }
+
             if store.armedCount > 0 {
                 Button("Pause All Timers") {
                     store.pauseAll()
@@ -200,22 +204,43 @@ struct MenuBarPopoverView: View {
     }
 
     private var accessibilityBanner: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Accessibility access required")
-                    .font(.system(size: 11.5, weight: .semibold))
-                Text("Needed so AgentNudge can type into Terminal & apps.")
-                    .font(.system(size: 10.5))
-                    .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 7) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Accessibility access required")
+                        .font(.system(size: 11.5, weight: .semibold))
+                    Text("Already enabled? Click Reset after an update or Relaunch.")
+                        .font(.system(size: 10.5))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
             }
-            Spacer()
-            Button("Enable") {
-                DeliveryEngine.promptForAccessibility()
+
+            HStack(spacing: 6) {
+                Button("Enable") {
+                    DeliveryEngine.promptForAccessibility()
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+
+                Button("Reset") {
+                    DeliveryEngine.resetAndPromptForAccessibility()
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help("Clears stale macOS permission entry after an app update and prompts fresh")
+
+                Button("Relaunch") {
+                    DeliveryEngine.relaunchApp()
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help("Restart AgentNudge after toggling Accessibility on")
+
+                Spacer()
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.small)
         }
         .padding(9)
         .background(Color.orange.opacity(0.12))

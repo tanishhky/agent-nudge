@@ -225,6 +225,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     }
 
     func refreshTargets() {
+        guard !isRefreshingTargets else { return }
         isRefreshingTargets = true
         TargetDiscoveryService.discoverTargets { [weak self] discovered in
             guard let self else { return }

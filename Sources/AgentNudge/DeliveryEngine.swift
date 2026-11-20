@@ -32,7 +32,9 @@ final class DeliveryEngine: @unchecked Sendable {
     private let deliveryQueue = DispatchQueue(label: "com.tanishkyadav.agent-nudge.delivery", qos: .userInitiated)
 
     static func isAccessibilityTrusted() -> Bool {
-        AXIsProcessTrusted()
+        let key = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
+        let options = [key: false] as CFDictionary
+        return AXIsProcessTrustedWithOptions(options)
     }
 
     static func promptForAccessibility() {
@@ -42,6 +44,28 @@ final class DeliveryEngine: @unchecked Sendable {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
             NSWorkspace.shared.open(url)
         }
+    }
+
+    static func resetAndPromptForAccessibility() {
+        if let bundleID = Bundle.main.bundleIdentifier {
+            _ = TargetDiscoveryService.runProcess(
+                executable: "/usr/bin/tccutil",
+                arguments: ["reset", "Accessibility", bundleID],
+                timeout: 3.0
+            )
+        }
+        usleep(250_000)
+        promptForAccessibility()
+    }
+
+    @MainActor
+    static func relaunchApp() {
+        let bundlePath = Bundle.main.bundleURL.path
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/sh")
+        task.arguments = ["-c", "sleep 0.4 && open \"\(bundlePath)\""]
+        try? task.run()
+        NSApp.terminate(nil)
     }
 
     func deliverBatch(
