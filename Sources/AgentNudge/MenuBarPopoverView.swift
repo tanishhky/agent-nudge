@@ -190,12 +190,13 @@ struct MenuBarPopoverView: View {
             }
         } label: {
             Image(systemName: "gearshape")
-                .font(.system(size: 13))
+                .font(.system(size: 13.5, weight: .medium))
                 .foregroundStyle(.secondary)
-                .padding(4)
         }
         .menuStyle(.borderlessButton)
-        .frame(width: 24, height: 24)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("Settings")
     }
 
     private var accessibilityBanner: some View {
